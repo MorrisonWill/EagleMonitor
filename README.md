@@ -24,8 +24,8 @@
 - **Features**
     - Implemented
         - React Communication with Backend (JWT)
-        - Auth0 Authentication
-        - 
+        - Auth0 Authentication - Gated Access
+        - State aware of Authentication
     - To be Implemented
         - Pagination
         - Sorting
