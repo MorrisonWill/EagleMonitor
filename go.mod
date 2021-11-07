@@ -1,4 +1,4 @@
-module github.com/MorrisonWill/EagleEye
+module github.com/MorrisonWill/EagleMonitor
 
 go 1.17
 
