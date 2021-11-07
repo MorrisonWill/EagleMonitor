@@ -1,10 +1,10 @@
-# EagleEye
+# EagleMonitor
 
 **Idea - An app that does eagle apps stuff for you.** 
 
 **Stack** 
 
-- Backend - Go/Python
+- Backend - Go
 - Frontend - React Native (Expo)
 - DB - EasyDB (In server memory)
 - Middleware + Routing - Chi, JWT
