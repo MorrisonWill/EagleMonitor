@@ -1,0 +1,3 @@
+*.exe
+serverConfig.json
+.DS_Store
