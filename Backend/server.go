@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 	"os"
 
@@ -13,11 +14,30 @@ import (
 	database "github.com/MorrisonWill/EagleMonitor/easydb"
 )
 
+type Config struct {
+	EagleApps struct {
+		User string `json:"User"`
+		Pass string `json:"Pass"`
+	} `json:"EagleApps"`
+	Database struct {
+		String string `json:"String"`
+		Token  string `json:"Token"`
+	} `json:"Database"`
+	Port string `json:"Port"`
+}
+
+type User struct {
+	Email   string `json:"Email"`
+	UserId  string `json:"UserId"`
+	Courses []struct {
+		CourseOfferingId string `json:"CourseOfferingId"`
+	} `json:"Courses"`
+}
+
 var tokenAuth *jwtauth.JWTAuth
 var db *database.DB
 
 func router() http.Handler {
-	fmt.Println("listening")
 	r := chi.NewRouter()
 
 	r.Group(func(r chi.Router) {
@@ -50,8 +70,15 @@ func router() http.Handler {
 
 			json.NewEncoder(w).Encode(seatCount)
 		})
-		r.Get("/db", func(w http.ResponseWriter, r *http.Request) {
+		r.Post("/createUser", func(w http.ResponseWriter, r *http.Request) {
+			_, claims, _ := jwtauth.FromContext(r.Context())
 
+			user := User{}
+			json.NewDecoder(r.Body).Decode(&user)
+
+			db.Put(fmt.Sprintf("%v", claims["user_id"]), user)
+			json.NewEncoder(w).Encode(user)
+			fmt.Println(db.List())
 		})
 	})
 
@@ -59,13 +86,19 @@ func router() http.Handler {
 }
 
 func main() {
-	eaUser := os.Getenv("EA_USER")
-	eaPass := os.Getenv("EA_PASS")
+	config := Config{}
+	configFile, err := os.Open("serverConfig.json")
 
-	dbStr := os.Getenv("DB_STR")
-	dbToken := os.Getenv("DB_TOKEN")
+	defer configFile.Close()
+	if err != nil {
+		log.Fatalln("Failed to open config file", err)
+	}
 
-	eagleapps.Authenticate(eaUser, eaPass)
-	db = database.Connect(dbStr, dbToken)
-	http.ListenAndServe(":8080", router())
+	json.NewDecoder(configFile).Decode(&config)
+
+	eagleapps.Authenticate(config.EagleApps.User, config.EagleApps.Pass)
+	db = database.Connect(config.Database.String, config.Database.Token)
+
+	fmt.Printf("Listening on port %s\n", config.Port)
+	http.ListenAndServe(fmt.Sprintf(":%s", config.Port), router())
 }
