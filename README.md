@@ -6,8 +6,8 @@
 
 - Backend - Go/Python
 - Frontend - React Native (Expo)
-- DB - Redis (In server memory)
-- Middleware + Routing - Chi
+- DB - EasyDB (In server memory)
+- Middleware + Routing - Chi, JWT
 
 **Fields from EagleApps Endpoint (UI)**
 
@@ -20,13 +20,13 @@
 - Class size
 - Credits
 
-- Features
+
+- **Features**
     - Implemented
-        - Communication with Backend (JWT)
+        - React Communication with Backend (JWT)
         - Auth0 Authentication
         - 
     - To be Implemented
-        - Auth0 Integration with BC
         - Pagination
         - Sorting
     - Work In Progress
