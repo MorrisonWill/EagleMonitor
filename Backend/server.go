@@ -43,8 +43,8 @@ func router() http.Handler {
 	r := chi.NewRouter()
 
 	r.Group(func(r chi.Router) {
-		r.Use(jwtauth.Verifier(tokenAuth))
-		r.Use(jwtauth.Authenticator)
+		// r.Use(jwtauth.Verifier(tokenAuth))
+		// r.Use(jwtauth.Authenticator)
 		r.Get("/user/info", func(w http.ResponseWriter, r *http.Request) {
 			_, claims, _ := jwtauth.FromContext(r.Context())
 			w.Header().Set("Content-Type", "application/json")
