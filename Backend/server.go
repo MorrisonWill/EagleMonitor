@@ -26,12 +26,14 @@ type Config struct {
 	Port string `json:"Port"`
 }
 
+type Courses struct {
+	CourseOfferingIds []string `json:"CourseOfferingIds"`
+}
+
 type User struct {
-	Email   string `json:"Email"`
-	UserId  string `json:"UserId"`
-	Courses []struct {
-		CourseOfferingId string `json:"CourseOfferingId"`
-	} `json:"Courses"`
+	Email   string  `json:"Email"`
+	UserId  string  `json:"UserId"`
+	Courses Courses `json:"Courses"`
 }
 
 var tokenAuth *jwtauth.JWTAuth
@@ -41,8 +43,8 @@ func router() http.Handler {
 	r := chi.NewRouter()
 
 	r.Group(func(r chi.Router) {
-		// r.Use(jwtauth.Verifier(tokenAuth))
-		// r.Use(jwtauth.Authenticator)
+		r.Use(jwtauth.Verifier(tokenAuth))
+		r.Use(jwtauth.Authenticator)
 		r.Get("/user/info", func(w http.ResponseWriter, r *http.Request) {
 			_, claims, _ := jwtauth.FromContext(r.Context())
 			w.Header().Set("Content-Type", "application/json")
@@ -70,15 +72,25 @@ func router() http.Handler {
 
 			json.NewEncoder(w).Encode(seatCount)
 		})
-		r.Post("/createUser", func(w http.ResponseWriter, r *http.Request) {
+		r.Post("/watchCourses", func(w http.ResponseWriter, r *http.Request) {
 			_, claims, _ := jwtauth.FromContext(r.Context())
 
-			user := User{}
-			json.NewDecoder(r.Body).Decode(&user)
+			courses := Courses{}
+			json.NewDecoder(r.Body).Decode(&courses)
+
+			fmt.Println(courses)
+
+			user := User{
+				Email:   fmt.Sprintf("%v", claims["email"]),
+				UserId:  fmt.Sprintf("%v", claims["user_id"]),
+				Courses: courses,
+			}
 
 			db.Put(fmt.Sprintf("%v", claims["user_id"]), user)
-			json.NewEncoder(w).Encode(user)
 			fmt.Println(db.List())
+			w.Header().Set("Content-Type", "application/json")
+
+			json.NewEncoder(w).Encode(user)
 		})
 	})
 
