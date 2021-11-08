@@ -1,3 +1,4 @@
 *.exe
 serverConfig.json
 .DS_Store
+auth_config.json
