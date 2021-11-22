@@ -108,8 +108,8 @@ func main() {
 
 	json.NewDecoder(configFile).Decode(&config)
 
-	eagleapps.Authenticate(config.EagleApps.User, config.EagleApps.Pass)
-	db = database.Connect(config.Database.String, config.Database.Token)
+	// eagleapps.Authenticate(config.EagleApps.User, config.EagleApps.Pass)
+	// db = database.Connect(config.Database.String, config.Database.Token)
 
 	fmt.Printf("Listening on port %s\n", config.Port)
 	http.ListenAndServe(fmt.Sprintf(":%s", config.Port), router())
