@@ -23,7 +23,8 @@ type Config struct {
 		String string `json:"String"`
 		Token  string `json:"Token"`
 	} `json:"Database"`
-	Port string `json:"Port"`
+	Port      string `json:"Port"`
+	JwtSecret string
 }
 
 type Courses struct {
@@ -39,12 +40,27 @@ type User struct {
 var tokenAuth *jwtauth.JWTAuth
 var db *database.DB
 
+func initJwt(secret string) {
+	tokenAuth = jwtauth.New("HS256", []byte(secret), nil)
+}
+
 func router() http.Handler {
 	r := chi.NewRouter()
 
 	r.Group(func(r chi.Router) {
-		// r.Use(jwtauth.Verifier(tokenAuth))
-		// r.Use(jwtauth.Authenticator)
+		r.Use(jwtauth.Verifier(tokenAuth))
+		r.Use(jwtauth.Authenticator)
+		r.Get("/test", func(w http.ResponseWriter, r *http.Request) {
+			course := User{
+				Email:   "test@gmail.com",
+				UserId:  "123",
+				Courses: Courses{},
+			}
+
+			w.Header().Set("Content-Type", "application/json")
+			w.Header().Set("Access-Control-Allow-Origin", "http://localhost:8081")
+			json.NewEncoder(w).Encode(course)
+		})
 		r.Get("/user/info", func(w http.ResponseWriter, r *http.Request) {
 			_, claims, _ := jwtauth.FromContext(r.Context())
 			w.Header().Set("Content-Type", "application/json")
@@ -102,11 +118,14 @@ func main() {
 	configFile, err := os.Open("serverConfig.json")
 
 	defer configFile.Close()
+
 	if err != nil {
 		log.Fatalln("Failed to open config file", err)
 	}
 
 	json.NewDecoder(configFile).Decode(&config)
+
+	initJwt(config.JwtSecret)
 
 	// eagleapps.Authenticate(config.EagleApps.User, config.EagleApps.Pass)
 	// db = database.Connect(config.Database.String, config.Database.Token)
