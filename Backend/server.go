@@ -40,10 +40,6 @@ type User struct {
 var tokenAuth *jwtauth.JWTAuth
 var db *database.DB
 
-func initJwt(secret string) {
-	tokenAuth = jwtauth.New("HS256", []byte(secret), nil)
-}
-
 func router() http.Handler {
 	r := chi.NewRouter()
 
@@ -58,7 +54,6 @@ func router() http.Handler {
 			}
 
 			w.Header().Set("Content-Type", "application/json")
-			w.Header().Set("Access-Control-Allow-Origin", "http://localhost:8081")
 			json.NewEncoder(w).Encode(course)
 		})
 		r.Get("/user/info", func(w http.ResponseWriter, r *http.Request) {
@@ -124,8 +119,6 @@ func main() {
 	}
 
 	json.NewDecoder(configFile).Decode(&config)
-
-	initJwt(config.JwtSecret)
 
 	// eagleapps.Authenticate(config.EagleApps.User, config.EagleApps.Pass)
 	// db = database.Connect(config.Database.String, config.Database.Token)
