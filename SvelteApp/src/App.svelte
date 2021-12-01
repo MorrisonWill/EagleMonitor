@@ -10,9 +10,10 @@
     user.set(session.user);
   });
 
-  console.log(supabase.auth.session().access_token);
+  /* console.log(supabase.auth.session().access_token); */
 
   async function getData() {
+  	console.log(supabase.auth.session().access_token)
     const response = await fetch("http://localhost:8080/test", {
       headers: {
         Authorization: `Bearer ${supabase.auth.session().access_token}`,

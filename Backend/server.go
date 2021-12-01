@@ -9,6 +9,7 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/jwtauth"
+	"github.com/go-chi/cors"
 
 	"github.com/MorrisonWill/EagleMonitor/eagleapps"
 	database "github.com/MorrisonWill/EagleMonitor/easydb"
@@ -43,6 +44,15 @@ var db *database.DB
 func router() http.Handler {
 	r := chi.NewRouter()
 
+	r.Use(cors.Handler(cors.Options{
+    		AllowedOrigins:   []string{"https://*", "http://*"},
+    		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+    		AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type", "X-CSRF-Token"},
+    		ExposedHeaders:   []string{"Link"},
+    		AllowCredentials: false,
+    		MaxAge:           300,
+  	}))	
+
 	r.Group(func(r chi.Router) {
 		r.Use(jwtauth.Verifier(tokenAuth))
 		r.Use(jwtauth.Authenticator)
@@ -54,6 +64,7 @@ func router() http.Handler {
 			}
 
 			w.Header().Set("Content-Type", "application/json")
+			w.Header().Set("Access-Control-Allow-Origin", "*")
 			json.NewEncoder(w).Encode(course)
 		})
 		r.Get("/user/info", func(w http.ResponseWriter, r *http.Request) {
@@ -109,6 +120,11 @@ func router() http.Handler {
 }
 
 func main() {
+	tokenAuth = jwtauth.New("HS256", []byte("f82a87e9-6e0b-4ac8-9c92-449919cb4fbb"), nil)
+
+	// _, tokenString, _ := tokenAuth.Encode(map[string]interface{}{"user_id": 123})
+	// fmt.Printf("DEBUG: a sample jwt is %s\n\n", tokenString)
+
 	config := Config{}
 	configFile, err := os.Open("serverConfig.json")
 
