@@ -3,9 +3,9 @@
   import { user } from './sessionStore'
 
   let loading = true
+  let courseLoading = true
   let username = null
-  let website = null
-  let avatar_url = null
+  let course = null
 
   async function getProfile() {
     try {
@@ -22,14 +22,28 @@
 
       if (data) {
         username = data.username
-        website = data.website
-        avatar_url = data.avatar_url
       }
     } catch (error) {
       alert(error.message)
     } finally {
       loading = false
     }
+  }
+
+  async function randomCourse() {
+    let number = Math.floor((Math.random() * 500) + 1); 
+    courseLoading = true
+    const response = await fetch(`http://localhost:8080/courses/1-${number}`, {
+      headers: {
+        Authorization: `Bearer ${supabase.auth.session().access_token}`,
+      },
+    });
+    const data = await response.json();
+
+    data.forEach(obj => course = obj.name)
+
+    courseLoading = false;
+
   }
 
   async function updateProfile() {
@@ -69,6 +83,8 @@
     }
     
   }
+
+  randomCourse();
 </script>
 
 <form use:getProfile class="form-widget" on:submit|preventDefault={updateProfile}>
@@ -85,15 +101,6 @@
     />
   </div>
   <div>
-    <label for="website">Website</label>
-    <input
-      id="website"
-      type="website"
-      bind:value={website}
-    />
-  </div>
-
-  <div>
     <input type="submit" class="button block primary" value={loading ? 'Loading ...' : 'Update'} disabled={loading}/>
   </div>
 
@@ -103,3 +110,12 @@
     </button>
   </div>
 </form>
+
+<br/>
+<br/>
+
+<button on:click={randomCourse}>
+  Random Course
+</button>
+
+<p>{courseLoading ? 'Loading ...' : course}</p>
