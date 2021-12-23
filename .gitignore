@@ -2,3 +2,7 @@
 serverConfig.json
 .DS_Store
 auth_config.json
+node_modules
+.npmrc
+.svelte-kit
+yarn.lock
