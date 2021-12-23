@@ -14,11 +14,11 @@
     </div>
     <div class="w-full lg:w-1/5 px-3 mb-8 lg:mb-0">
       <p class="mb-2 lg:mb-4 lg:text-lg font-bold font-heading text-blueGray-800">Creator</p>
-      <p class="lg:text-lg text-blueGray-400">Will Morrison '25</p>
+      <p class="lg:text-lg text-blueGray-400">Will Morrison '25, Andy Clark '??</p>
     </div>
     <div class="w-full lg:w-1/5 px-3">
       <p class="mb-2 lg:mb-4 lg:text-lg font-bold font-heading text-blueGray-800">Contact</p>
-      <p class="lg:text-lg text-blueGray-400">eaglemonitor@willrmorrison.com</p>
+      <p class="lg:text-lg text-blueGray-400">eaglemonitor@willrmorrison.com, ??</p>
     </div>
   </div>
   <div class="flex flex-col lg:flex-row items-center lg:justify-between">
