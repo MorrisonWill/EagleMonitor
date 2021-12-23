@@ -8,11 +8,9 @@
 	let course = null;
 
 	async function getProfile() {
-		const user = supabase.auth.user();
-
 		const { data, count } = supabase
 			.from('profiles')
-			.select('id, email')
+			.select('*')
 			.eq('id', user.id)
 			.single()
 		console.log(data)

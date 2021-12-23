@@ -1,4 +1,10 @@
 <script>
+  import { getNumProfiles, getNumListedCourses, getNumMonitoredCourses, getNumNotifications } from "$lib/stats.js"
+
+  let numProfiles = getNumProfiles();
+  let numListedCourses = getNumListedCourses();
+  let numMonitoredCourses = getNumMonitoredCourses();
+  let numNotifications = getNumNotifications();
 </script>
 
 <section class="xl:bg-contain bg-top bg-no-repeat" style="background-image: url('https://shuffle.dev/metis-assets/backgrounds/intersect.svg');"><div class="container px-4 mx-auto">
@@ -22,7 +28,13 @@
         <div class="flex justify-center items-center bg-blueGray-50 rounded-xl h-12 w-12 sm:h-20 sm:w-20">
           <img class="h-6 sm:h-8" src="https://shuffle.dev/metis-assets/icons/user-circle.svg" alt=""></div>
         <div class="sm:py-2 ml-2 sm:ml-6">
-          <span class="sm:text-2xl font-bold font-heading">999</span>
+          {#await numProfiles}
+            <span class="sm:text-2xl font-bold font-heading">loading...</span>
+          {:then result}
+            <span class="sm:text-2xl font-bold font-heading">{result}</span>
+          {:catch error}
+            <span class="sm:text-2xl font-bold font-heading">Error getting the number of users.</span>
+          {/await}
           <p class="text-xs sm:text-base text-blueGray-400">Users</p>
         </div>
       </div>
@@ -30,7 +42,13 @@
         <div class="flex justify-center items-center bg-blueGray-50 rounded-xl h-12 w-12 sm:h-20 sm:w-20">
           <img class="h-6 sm:h-8" src="https://shuffle.dev/metis-assets/icons/puzzle.svg" alt=""></div>
         <div class="sm:py-2 ml-2 sm:ml-6">
-          <span class="sm:text-2xl font-bold font-heading">999</span>
+          {#await numListedCourses}
+            <span class="sm:text-2xl font-bold font-heading">loading...</span>
+          {:then result}
+            <span class="sm:text-2xl font-bold font-heading">{result}</span>
+          {:catch error}
+            <span class="sm:text-2xl font-bold font-heading">Error getting the number of listed courses.</span>
+          {/await}
           <p class="text-xs sm:text-base text-blueGray-400">Courses Listed</p>
         </div>
       </div>
@@ -38,7 +56,13 @@
         <div class="flex justify-center items-center bg-blueGray-50 rounded-xl h-12 w-12 sm:h-20 sm:w-20">
           <img class="h-6 sm:h-8" src="https://shuffle.dev/metis-assets/icons/thumb-up.svg" alt=""></div>
         <div class="sm:py-2 ml-2 sm:ml-6">
-          <span class="sm:text-2xl font-bold font-heading">999</span>
+          {#await numMonitoredCourses}
+            <span class="sm:text-2xl font-bold font-heading">loading...</span>
+          {:then result}
+            <span class="sm:text-2xl font-bold font-heading">{result}</span>
+          {:catch error}
+            <span class="sm:text-2xl font-bold font-heading">Error getting the number of monitored courses.</span>
+          {/await}
           <p class="text-xs sm:text-base text-blueGray-400">Monitored Courses</p>
         </div>
       </div>
@@ -46,7 +70,13 @@
         <div class="flex justify-center items-center bg-blueGray-50 rounded-xl h-12 w-12 sm:h-20 sm:w-20">
           <img class="h-6 sm:h-8" src="https://shuffle.dev/metis-assets/icons/terminal.svg" alt=""></div>
         <div class="sm:py-2 ml-2 sm:ml-6">
-          <span class="sm:text-2xl font-bold font-heading">999</span>
+          {#await numNotifications}
+            <span class="sm:text-2xl font-bold font-heading">loading...</span>
+          {:then result}
+            <span class="sm:text-2xl font-bold font-heading">{result}</span>
+          {:catch error}
+            <span class="sm:text-2xl font-bold font-heading">Error getting the number of notifications sent.</span>
+          {/await}
           <p class="text-xs sm:text-base text-blueGray-400">Notifications Sent</p>
         </div>
       </div>
