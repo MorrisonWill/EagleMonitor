@@ -8,11 +8,10 @@ import (
 	"os"
 
 	"github.com/go-chi/chi/v5"
-	"github.com/go-chi/jwtauth"
 	"github.com/go-chi/cors"
+	"github.com/go-chi/jwtauth"
 
 	"github.com/MorrisonWill/EagleMonitor/eagleapps"
-	database "github.com/MorrisonWill/EagleMonitor/easydb"
 )
 
 type Config struct {
@@ -39,19 +38,18 @@ type User struct {
 }
 
 var tokenAuth *jwtauth.JWTAuth
-var db *database.DB
 
 func router() http.Handler {
 	r := chi.NewRouter()
 
 	r.Use(cors.Handler(cors.Options{
-    		AllowedOrigins:   []string{"https://*", "http://*"},
-    		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
-    		AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type", "X-CSRF-Token"},
-    		ExposedHeaders:   []string{"Link"},
-    		AllowCredentials: false,
-    		MaxAge:           300,
-  	}))	
+		AllowedOrigins:   []string{"https://*", "http://*"},
+		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+		AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type", "X-CSRF-Token"},
+		ExposedHeaders:   []string{"Link"},
+		AllowCredentials: false,
+		MaxAge:           300,
+	}))
 
 	r.Group(func(r chi.Router) {
 		r.Use(jwtauth.Verifier(tokenAuth))
@@ -72,7 +70,7 @@ func router() http.Handler {
 			w.Header().Set("Content-Type", "application/json")
 			json.NewEncoder(w).Encode(claims)
 		})
-		r.Get("/courses/{maxValues}-{startAt}", func(w http.ResponseWriter, r *http.Request) { 
+		r.Get("/courses/{maxValues}-{startAt}", func(w http.ResponseWriter, r *http.Request) {
 			maxValues := chi.URLParam(r, "maxValues")
 			startAt := chi.URLParam(r, "startAt")
 
@@ -108,8 +106,6 @@ func router() http.Handler {
 				Courses: courses,
 			}
 
-			db.Put(fmt.Sprintf("%v", claims["user_id"]), user)
-			fmt.Println(db.List())
 			w.Header().Set("Content-Type", "application/json")
 
 			json.NewEncoder(w).Encode(user)
@@ -137,7 +133,6 @@ func main() {
 	json.NewDecoder(configFile).Decode(&config)
 
 	eagleapps.Authenticate(config.EagleApps.User, config.EagleApps.Pass)
-	db = database.Connect(config.Database.String, config.Database.Token)
 
 	fmt.Printf("Listening on port %s\n", config.Port)
 	http.ListenAndServe(fmt.Sprintf(":%s", config.Port), router())
