@@ -6,12 +6,43 @@
 
   let rows = [];
 
+  async function monitor(id) {
+    let { data: courses } = await supabase
+      .from("profiles")
+      .select("courses")
+      .eq("id", supabase.auth.user().id);
+    console.log(courses[0].courses);
+
+    let existing = courses[0].courses;
+
+    if (existing == null) {
+      existing = [];
+    }
+
+    existing.push(id);
+
+    let cleaned = [...new Set(existing)];
+
+    await supabase
+      .from("profiles")
+      .update({ courses: cleaned })
+      .eq("id", supabase.auth.user().id);
+  }
+
   async function getCourses(start, end) {
     let { data: courses } = await supabase
       .from("courses")
       .select("*")
       .range(start, end);
     rows = courses;
+  }
+
+  async function test() {
+    let { data: courses } = await supabase
+      .from("courses")
+      .select("*")
+      .contains("instructors", ["McElwaine, Michelle L"]);
+    console.log(courses);
   }
 
   function nextPage() {
@@ -25,6 +56,8 @@
     to -= 10;
     getCourses(from, to);
   }
+
+  test();
 
   getCourses(from, to);
 </script>
@@ -46,6 +79,11 @@
           <td>{row.id}</td>
           <td>{row.name}</td>
           <td>{row.status}</td>
+          <td
+            ><button on:click={() => monitor(row.id)} class="bg-red-100"
+              >monitor</button
+            ></td
+          >
         </tr>
       {:else}
         <tr>
