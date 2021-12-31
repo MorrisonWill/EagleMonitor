@@ -1,17 +1,20 @@
 package main
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
 	"os"
+	"time"
 
 	"github.com/joho/godotenv"
 	"github.com/mailgun/mailgun-go"
 )
 
-type Profiles []struct {
+type Profile struct {
+	ID      string   `json:"id"`
 	Email   string   `json:"email"`
 	Courses []string `json:"courses"`
 }
@@ -44,8 +47,8 @@ func sendNotifyEmail(email, course string) (string, error) {
 	return resp, err
 }
 
-func getProfiles() Profiles {
-	request, _ := http.NewRequest("GET", "https://npthxfsjlkgtythiccdg.supabase.co/rest/v1/profiles?select=courses,email", nil)
+func getProfiles() []Profile {
+	request, _ := http.NewRequest("GET", "https://npthxfsjlkgtythiccdg.supabase.co/rest/v1/profiles?select=id,courses,email", nil)
 
 	request.Header.Add("apikey", serviceKey)
 	request.Header.Add("Authorization", fmt.Sprintf("Bearer %s", serviceKey))
@@ -56,7 +59,7 @@ func getProfiles() Profiles {
 	}
 	defer response.Body.Close()
 
-	profiles := &Profiles{}
+	profiles := &[]Profile{}
 
 	json.NewDecoder(response.Body).Decode(profiles)
 
@@ -82,13 +85,51 @@ func checkCourseStatus(course string) string {
 	return (*status)[0].Status
 }
 
+func indexOf(element string, data []string) int {
+	for k, v := range data {
+		if element == v {
+			return k
+		}
+	}
+	return -1
+}
+
+func dropCourseFromProfile(profile Profile, course string) {
+	index := indexOf(course, profile.Courses)
+	payload, _ := json.Marshal(append(profile.Courses[:index], profile.Courses[index+1:]...))
+
+	fmt.Printf("removing %s, new %v\n", course, append(profile.Courses[:index], profile.Courses[index+1:]...))
+
+	j := json.RawMessage(payload)
+
+	data, _ := json.Marshal(map[string]interface{}{
+		"courses": j,
+	})
+	request, err := http.NewRequest("PATCH", fmt.Sprintf("https://npthxfsjlkgtythiccdg.supabase.co/rest/v1/profiles?id=eq.%s", profile.ID), bytes.NewBuffer(data))
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	request.Header.Add("apikey", serviceKey)
+	request.Header.Add("Authorization", fmt.Sprintf("Bearer %s", serviceKey))
+	request.Header.Add("Content-Type", "application/json")
+	request.Header.Add("Prefer", "return=representation")
+
+	response, err := client.Do(request)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer response.Body.Close()
+	time.Sleep(time.Millisecond * 250)
+}
+
 func monitorAndSend() {
 	profiles := getProfiles()
 
 	for _, profile := range profiles {
 		for _, course := range profile.Courses {
 			if checkCourseStatus(course) == "open" {
-				sendNotifyEmail(profile.Email, course)
+				dropCourseFromProfile(profile, course)
 			}
 		}
 	}
