@@ -7,7 +7,7 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"time"
+	"strings"
 
 	"github.com/joho/godotenv"
 	"github.com/mailgun/mailgun-go"
@@ -30,11 +30,12 @@ var serviceKey string // to be set later from env
 
 var client = http.Client{}
 
-func sendNotifyEmail(email, course string) (string, error) {
+func sendNotifyEmail(email string, courses []string) (string, error) {
 	mg := mailgun.NewMailgun(domain, privateKey)
 	sender := "notification@eaglemonitor.app"
-	subject := fmt.Sprintf("%s IS OPEN!", course)
-	body := fmt.Sprintf("One of the courses you added to your monitoring list on Eagle Monitor, %s, has an opening! Grab it while you can!", course)
+	subject := fmt.Sprintf("%d BC COURSES OPENED!", len(courses))
+	list := "'" + strings.Join(courses, `','`) + `'`
+	body := fmt.Sprintf("%d of the courses you added to your monitoring list on Eagle Monitor have opened! Here's the list:\n\n%v", len(courses), list)
 
 	message := mg.NewMessage(sender, subject, body, email)
 
@@ -59,11 +60,11 @@ func getProfiles() []Profile {
 	}
 	defer response.Body.Close()
 
-	profiles := &[]Profile{}
+	profiles := []Profile{}
 
-	json.NewDecoder(response.Body).Decode(profiles)
+	json.NewDecoder(response.Body).Decode(&profiles)
 
-	return *profiles
+	return profiles
 }
 
 func checkCourseStatus(course string) string {
@@ -78,11 +79,11 @@ func checkCourseStatus(course string) string {
 	}
 	defer response.Body.Close()
 
-	status := &Status{}
+	status := Status{}
 
-	json.NewDecoder(response.Body).Decode(status)
+	json.NewDecoder(response.Body).Decode(&status)
 
-	return (*status)[0].Status
+	return (status)[0].Status
 }
 
 func indexOf(element string, data []string) int {
@@ -94,11 +95,12 @@ func indexOf(element string, data []string) int {
 	return -1
 }
 
-func dropCourseFromProfile(profile Profile, course string) {
-	index := indexOf(course, profile.Courses)
-	payload, _ := json.Marshal(append(profile.Courses[:index], profile.Courses[index+1:]...))
+func remove(slice []string, s int) []string {
+	return append(slice[:s], slice[s+1:]...)
+}
 
-	fmt.Printf("removing %s, new %v\n", course, append(profile.Courses[:index], profile.Courses[index+1:]...))
+func replaceCourses(profile Profile, courses []string) {
+	payload, _ := json.Marshal(courses)
 
 	j := json.RawMessage(payload)
 
@@ -120,17 +122,27 @@ func dropCourseFromProfile(profile Profile, course string) {
 		log.Fatal(err)
 	}
 	defer response.Body.Close()
-	time.Sleep(time.Millisecond * 250)
 }
 
-func monitorAndSend() {
+func removeAllOpen(courses []string) (open []string, closed []string) {
+	for _, course := range courses {
+		if checkCourseStatus(course) == "open" {
+			open = append(open, course)
+		} else {
+			closed = append(closed, course)
+		}
+	}
+	return
+}
+
+func MonitorAndSend() {
 	profiles := getProfiles()
 
 	for _, profile := range profiles {
-		for _, course := range profile.Courses {
-			if checkCourseStatus(course) == "open" {
-				dropCourseFromProfile(profile, course)
-			}
+		open, closed := removeAllOpen(profile.Courses)
+		if len(open) > 0 {
+			replaceCourses(profile, closed)
+			sendNotifyEmail(profile.Email, open)
 		}
 	}
 }
@@ -141,5 +153,5 @@ func main() {
 	serviceKey = os.Getenv("SUPABASE_SERVICE_KEY")
 	privateKey = os.Getenv("MAILGUN_PRIVATE_KEY")
 
-	monitorAndSend()
+	MonitorAndSend()
 }

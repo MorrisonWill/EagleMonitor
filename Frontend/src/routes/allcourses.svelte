@@ -11,7 +11,6 @@
       .from("profiles")
       .select("courses")
       .eq("id", supabase.auth.user().id);
-    console.log(courses[0].courses);
 
     let existing = courses[0].courses;
 
@@ -37,14 +36,6 @@
     rows = courses;
   }
 
-  async function test() {
-    let { data: courses } = await supabase
-      .from("courses")
-      .select("*")
-      .contains("instructors", ["McElwaine, Michelle L"]);
-    console.log(courses);
-  }
-
   function nextPage() {
     from += 10;
     to += 10;
@@ -57,15 +48,13 @@
     getCourses(from, to);
   }
 
-  test();
-
   getCourses(from, to);
 
   export let style;
-  let blueStyle="blueTable";
+  let blueStyle = "blueTable";
 </script>
 
-<table class="blueTable"> 
+<table class="blueTable">
   <thead>
     <tr>
       <th>ID</th>
@@ -97,52 +86,68 @@
   </tbody>
 </table>
 
-
-<style>
- table, th, td {
-  border: 2px solid;
-  border-collapse: collapse;
-  margin: 10px; 
- }
- 
- table.blueTable {
-  border: 1px solid #1C6EA4;
-  background-color: #EEEEEE;
-  width: 100%;
-  text-align: left;
-  border-collapse: collapse;
- }
-
- table.blueTable td, table.blueTable th {
-  border: 1px solid #AAAAAA;
-  padding: 3px 2px;
- }
- table.blueTable tbody td {
-   font-size: 13px
- }
- table.blueTable tr:nth-child(even) {
-  background: #D0E4F5;
- }
- table.blueTable thead {
-  background: #1C6EA4;
-  background: -moz-linear-gradient(top, #5592bb 0%, #327cad 66%, #1C6EA4 100%);
-  background: -webkit-linear-gradient(top, #5592bb 0%, #327cad 66%, #1C6EA4 100%);
-  background: linear-gradient(to bottom, #5592bb 0%, #327cad 66%, #1C6EA4 100%);
-  border-bottom: 2px solid #444444;
- }
- table.blueTable thead th {
-  font-size: 15px;
-  font-weight: bold;
-  color: #FFFFFF;
-  border-left: 2px solid #D0E4F5;
- }
- table.blueTable thead th:first-child {
-  border-left: none;
- } 
-</style>
-
 {#if from != 0}
   <button on:click={previousPage}>previous</button>
 {/if}
 <button on:click={nextPage}>next</button>
 
+<style>
+  table,
+  th,
+  td {
+    border: 2px solid;
+    border-collapse: collapse;
+    margin: 10px;
+  }
+
+  table.blueTable {
+    border: 1px solid #1c6ea4;
+    background-color: #eeeeee;
+    width: 100%;
+    text-align: left;
+    border-collapse: collapse;
+  }
+
+  table.blueTable td,
+  table.blueTable th {
+    border: 1px solid #aaaaaa;
+    padding: 3px 2px;
+  }
+  table.blueTable tbody td {
+    font-size: 13px;
+  }
+  table.blueTable tr:nth-child(even) {
+    background: #d0e4f5;
+  }
+  table.blueTable thead {
+    background: #1c6ea4;
+    background: -moz-linear-gradient(
+      top,
+      #5592bb 0%,
+      #327cad 66%,
+      #1c6ea4 100%
+    );
+    background: -webkit-linear-gradient(
+      top,
+      #5592bb 0%,
+      #327cad 66%,
+      #1c6ea4 100%
+    );
+    background: linear-gradient(
+      to bottom,
+      #5592bb 0%,
+      #327cad 66%,
+      #1c6ea4 100%
+    );
+    border-bottom: 2px solid #444444;
+  }
+  table.blueTable thead th {
+    font-size: 15px;
+    font-weight: bold;
+    color: #ffffff;
+    border-left: 2px solid #d0e4f5;
+  }
+  table.blueTable thead th:first-child {
+    border-left: none;
+  }
+</style>
