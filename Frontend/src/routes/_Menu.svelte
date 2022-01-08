@@ -61,7 +61,7 @@
       <div
         in:scale={{ duration: 100, start: 0.95 }}
         out:scale={{ duration: 75, start: 0.95 }}
-        class="origin-top-right absolute right-0 w-48 py-2 mt-1 bg-gray-800
+        class="origin-top-right absolute right-0 w-48 py-2 mt-1 bg-blue-600
           rounded shadow-md"
       >
         <a
