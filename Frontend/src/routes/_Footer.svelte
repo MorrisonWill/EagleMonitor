@@ -32,7 +32,7 @@
           Creator
         </p>
         <p class="lg:text-lg text-blueGray-400">
-          Will Morrison '25, Andy Clark '??
+          Will Morrison '25, Andy Clark '23
         </p>
       </div>
       <div class="w-full lg:w-1/5 px-3">
@@ -42,7 +42,7 @@
           Contact
         </p>
         <p class="lg:text-lg text-blueGray-400">
-          eaglemonitor@willrmorrison.com, ??
+          eaglemonitor@willrmorrison.com, clarkui@bc.edu
         </p>
       </div>
     </div>
