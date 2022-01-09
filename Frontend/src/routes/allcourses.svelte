@@ -86,12 +86,15 @@
   </tbody>
 </table>
 
-{#if from != 0}
-  <button on:click={previousPage}>previous</button>
-{/if}
-<button on:click={nextPage}>next</button>
+<div class="container">
+  {#if from != 0}
+    <button class="primary" on:click={previousPage}>Previous</button>
+  {/if}
+    <button class="primary" on:click={nextPage}>Next</button>
+</div>
 
 <style>
+  /* Table Style */
   table,
   th,
   td {
@@ -150,4 +153,30 @@
   table.blueTable thead th:first-child {
     border-left: none;
   }
+
+  /* Button Styles */
+  .primary {
+    background-color:#1c6ea4;
+    border-radius: 10px;
+    border-color: black;
+    color: white;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;  
+  }
+  .secondary {
+    color:black;
+  }
+
+  /* Button Container */
+  .container {
+    margin-left:auto;
+    margin-right: auto;
+    width: 15em;
+    padding-top: 1vw;
+
+  }
+
 </style>

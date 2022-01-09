@@ -1,6 +1,7 @@
 <script>
   import { onMount } from 'svelte';
-  import { scale } from 'svelte/transition';
+  import { scale } from 'svelte/transition'; 
+  import { supabase } from "$lib/supabaseClient";
 
   export let user;
 
