@@ -4,13 +4,19 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"net/http"
+	"os"
 	"regexp"
+	"time"
 
 	"github.com/MorrisonWill/EagleMonitor/eagleapps"
+	"github.com/joho/godotenv"
 
 	t "github.com/MorrisonWill/EagleMonitor/eagleapps/types"
 )
+
+var serviceKey string
 
 func ConstructCourseList() (CourseList []t.CourseStruct) {
 	courses := eagleapps.GetCourses("10000", "1")
@@ -21,7 +27,30 @@ func ConstructCourseList() (CourseList []t.CourseStruct) {
 		seatCounts := eagleapps.GetSeatCountsFromOfferings(activityOfferings)
 
 		instructors := []string{}
+		rooms := []string{}
+		times := []string{}
+
 		for _, offering := range activityOfferings {
+			if len(offering.ScheduleIds) == 0 {
+				continue
+			}
+
+			eagleResponse := eagleapps.GetSchedule(offering.ScheduleIds[0])
+
+			if len(eagleResponse) == 0 {
+				continue
+			}
+
+			scheduleData := eagleResponse[0].ScheduleComponentDisplays
+			if len(scheduleData) == 0 {
+				continue
+			}
+			rooms = append(rooms, scheduleData[0].Room.Name)
+			if len(scheduleData[0].TimeSlots) == 0 {
+				continue
+			}
+			times = append(times, scheduleData[0].TimeSlots[0].Descr.Plain)
+
 			for _, instructor := range offering.Instructors {
 				instructors = append(instructors, instructor.PersonName)
 			}
@@ -34,6 +63,8 @@ func ConstructCourseList() (CourseList []t.CourseStruct) {
 			TermID:      activityOfferings[0].TermCode,
 			Instructors: instructors,
 			SeatData:    seatCounts,
+			Rooms:       rooms,
+			Times:       times,
 		}
 
 		CourseList = append(CourseList, courseStruct)
@@ -49,6 +80,10 @@ func CreateSeatDataStringSlice(s []t.SeatData) (returnSlice []string) {
 }
 
 func main() {
+	godotenv.Load("/home/user/dev/projects/EagleMonitor/Backend/.env")
+
+	serviceKey = os.Getenv("SUPABASE_SERVICE_KEY")
+
 	eagleapps.Authenticate("morriswk@bc.edu", "***REMOVED***")
 
 	course := ConstructCourseList()
@@ -61,6 +96,10 @@ func main() {
 		descriptionText = removeHtmlPattern.ReplaceAllString(descriptionText, "")
 
 		client := http.Client{}
+
+		t := time.Now().Format("01/02/2006 3:4:5 pm")
+
+		fmt.Println(t)
 
 		data, _ := json.Marshal(map[string]interface{}{
 			"id":               item.ID,
@@ -77,14 +116,36 @@ func main() {
 			"termID":           item.TermID,
 			"instructors":      item.Instructors,
 			"seatData":         CreateSeatDataStringSlice(item.SeatData),
+			"rooms":            item.Rooms,
+			"times":            item.Times,
+			"lastUpdated":      t,
 		})
 
-		request, _ := http.NewRequest("POST", "https://npthxfsjlkgtythiccdg.supabase.co/rest/v1/courses", bytes.NewBuffer(data))
-		request.Header.Add("apikey", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYW5vbiIsImlhdCI6MTYzNjU2ODc3NSwiZXhwIjoxOTUyMTQ0Nzc1fQ.CwUnJhI0_fMS5O77DxLKkhHf9ULziq5eCvHwEY9z5RI")
-		request.Header.Add("Authorization", "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYW5vbiIsImlhdCI6MTYzNjU2ODc3NSwiZXhwIjoxOTUyMTQ0Nzc1fQ.CwUnJhI0_fMS5O77DxLKkhHf9ULziq5eCvHwEY9z5RI")
+		// Initial populate request
+		// request, _ := http.NewRequest("POST", "https://npthxfsjlkgtythiccdg.supabase.co/rest/v1/courses", bytes.NewBuffer(data))
+
+		// Update request
+		request, _ := http.NewRequest("PATCH", fmt.Sprintf("https://npthxfsjlkgtythiccdg.supabase.co/rest/v1/courses?id=eq.%s", item.ID), bytes.NewBuffer(data))
+
+		request.Header.Add("apikey", serviceKey)
+		request.Header.Add("Authorization", fmt.Sprintf("Bearer %s", serviceKey))
 		request.Header.Add("Content-Type", "application/json")
 		request.Header.Add("Prefer", "return=representation")
 
-		client.Do(request)
+		response, _ := client.Do(request)
+
+		full, _ := ioutil.ReadAll(response.Body)
+		fmt.Println(string(full))
+
+		if response.StatusCode != 200 {
+			request, _ := http.NewRequest("POST", "https://npthxfsjlkgtythiccdg.supabase.co/rest/v1/courses", bytes.NewBuffer(data))
+
+			request.Header.Add("apikey", serviceKey)
+			request.Header.Add("Authorization", fmt.Sprintf("Bearer %s", serviceKey))
+			request.Header.Add("Content-Type", "application/json")
+			request.Header.Add("Prefer", "return=representation")
+
+			client.Do(request)
+		}
 	}
 }
