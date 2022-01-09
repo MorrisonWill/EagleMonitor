@@ -60,6 +60,7 @@
       <th>ID</th>
       <th>Name</th>
       <th>Status</th>
+      <th>Monitor</th>
     </tr>
   </thead>
   <tbody>
@@ -71,11 +72,11 @@
           <td>{row.id}</td>
           <td>{row.name}</td>
           <td>{row.status}</td>
-          <td
-            ><button on:click={() => monitor(row.id)} class="bg-red-100"
-              >monitor</button
-            ></td
-          >
+          <td>
+            <button on:click={() => monitor(row.id)} class="bg-red-100">
+               <img src="../src/assets/plus.png" width=10px height=10px>
+            </button>
+          </td>
         </tr>
       {:else}
         <tr>
@@ -156,7 +157,7 @@
 
   /* Button Styles */
   .primary {
-    background-color:#1c6ea4;
+    background-color:#2563eb;
     border-radius: 10px;
     border-color: black;
     color: white;

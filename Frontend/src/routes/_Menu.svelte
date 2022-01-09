@@ -69,23 +69,24 @@
           href="/allcourses"
           class="block px-4 py-2 hover:bg-black-500 hover:text-green-100"
         >All Courses</a>
+      {#if user}
         <a 
           href="/mycourses"
           class="block px-4 py-2 hover:bg-black-500 hover:text-green-100"
         >My Courses</a>
+      {/if}
+      {#if !user}
         <a
           href=""
           class="block px-4 py-2 hover:bg-black-500 hover:text-green-100"
         >Sign In</a>
-       
+      {/if}
+      {#if user}
         <a
           on:click={SignOut}
           class="block px-4 py-2 hover:bg-black-500 hover:text-green-100"
-        >Logout</a>
-        <a 
-          href=""
-          class="block px-4 py-2 hover:bg-black-500 hover:text-green-100"
-        >Sign Up</a>
+        >Logout</a> 
+      {/if}
       </div>
     {/if}
   </div>
