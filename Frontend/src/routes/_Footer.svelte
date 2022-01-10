@@ -42,7 +42,7 @@
           Contact
         </p>
         <p class="lg:text-lg text-blueGray-400">
-          eaglemonitor@willrmorrison.com, clarkui@bc.edu
+          morriswk@bc.edu, clarkui@bc.edu
         </p>
       </div>
     </div>

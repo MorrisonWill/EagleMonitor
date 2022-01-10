@@ -1,4 +1,5 @@
 <script>
+  import CourseCard from "./_courseCard.svelte";
   import { supabase } from "$lib/supabaseClient";
 
   let from = 0;
@@ -6,43 +7,13 @@
 
   let rows = [];
 
-  async function monitor(id) {
-    let { data: courses } = await supabase
-      .from("profiles")
-      .select("courses")
-      .eq("id", supabase.auth.user().id);
-    console.log(courses[0].courses);
-
-    let existing = courses[0].courses;
-
-    if (existing == null) {
-      existing = [];
-    }
-
-    existing.push(id);
-
-    let cleaned = [...new Set(existing)];
-
-    await supabase
-      .from("profiles")
-      .update({ courses: cleaned })
-      .eq("id", supabase.auth.user().id);
-  }
-
   async function getCourses(start, end) {
     let { data: courses } = await supabase
       .from("courses")
       .select("*")
+      .order("id", { ascending: false })
       .range(start, end);
     rows = courses;
-  }
-
-  async function test() {
-    let { data: courses } = await supabase
-      .from("courses")
-      .select("*")
-      .contains("instructors", ["McElwaine, Michelle L"]);
-    console.log(courses);
   }
 
   function nextPage() {
@@ -57,11 +28,31 @@
     getCourses(from, to);
   }
 
-  test();
-
   getCourses(from, to);
 </script>
 
+{#if from != 0}
+  <button on:click={previousPage}>previous</button>
+{/if}
+<button on:click={nextPage}>next</button>
+
+<body>
+  <div class="container mt-4 mx-auto">
+    <div class="grid grid-cols-1">
+      {#await rows}
+        <p>loading course info...</p>
+      {:then rows}
+        {#each rows as row}
+          <CourseCard course={row} />
+        {:else}
+          <p>There is no course to show</p>
+        {/each}
+      {/await}
+    </div>
+  </div>
+</body>
+
+<!--
 <table class="blueTable">
   <thead>
     <tr>
@@ -207,3 +198,4 @@
     border-left: none;
   }
 </style>
+-->
