@@ -11,7 +11,7 @@
     let { data: courses } = await supabase
       .from("courses")
       .select("*")
-      .order("id", { ascending: false })
+      .order("id", { ascending: true })
       .range(start, end);
     rows = courses;
   }
