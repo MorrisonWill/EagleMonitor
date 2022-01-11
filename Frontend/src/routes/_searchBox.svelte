@@ -1,14 +1,19 @@
 <script>
   import Search from "svelte-search";
-  let value = "";  
+  let value = "";
+  export let searchTitlesProp = () => {};
+  export let clearSearchProp = () => {};
 </script>
 
-<Search label="searchBox" hideLabel bind:value on:submit={() => console.log(value)} placeholder="Search..."/>
+<Search
+  label="searchBox"
+  hideLabel
+  bind:value
+  on:submit={searchTitlesProp({ value })}
+  placeholder="Search..."
+/>
 
-{#if value} 
-  <button on:click={() => (value = "")}>Clear "{value}"</button>
-{/if}
-
+<button on:click={() => ((value = ""), clearSearchProp())}>Reset search</button>
 
 <style>
   :global([data-svelte-search] input) {
@@ -21,5 +26,3 @@
     border-radius: 0.25rem;
   }
 </style>
-
-
