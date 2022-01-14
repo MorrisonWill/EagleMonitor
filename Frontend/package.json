@@ -21,6 +21,7 @@
   },
   "type": "module",
   "dependencies": {
-    "@supabase/supabase-js": "^1.29.0"
+    "@supabase/supabase-js": "^1.29.0",
+    "svelte-infinite-scroll": "^2.0.0"
   }
 }
