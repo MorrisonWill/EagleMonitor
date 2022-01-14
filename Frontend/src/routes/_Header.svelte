@@ -30,10 +30,6 @@
         <Menu />
       </div>
       {#if $user}
-        <a
-          class="block p-4 text-sm font-semibold hover:bg-indigo-50 hover:text-indigo-500 rounded"
-          href="myCourses">View My Courses</a
-        >
 
         <button
           class="inline-block px-4 py-3 text-xs font-semibold leading-none bg-blue-600 hover:bg-blue-700 text-white rounded"

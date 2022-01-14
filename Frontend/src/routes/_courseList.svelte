@@ -3,9 +3,11 @@
   import CourseCard from "./_courseCard.svelte";
   import { supabase } from "$lib/supabaseClient";
   import SearchBox from "./_searchBox.svelte";
+  import MyCourses from "./_myCourses.svelte";
 
   let onlyOpen = false;
   let inSearch = false;
+  let myCourses = false;
 
   let start = 0;
   let end = 9;
@@ -95,6 +97,10 @@
     clearSearch();
   }
 
+  function toggleMyCourses() {
+    myCourses = !myCourses;
+  }
+
   onMount(() => {
     // load first batch onMount
     fetchData();
@@ -102,6 +108,16 @@
 
   $: data = [...data, ...newBatch];
 </script>
+
+<button
+  on:click={toggleMyCourses}
+  class="block p-4 text-sm font-semibold hover:bg-indigo-50 hover:text-indigo-500 rounded"
+  >View My Courses</button
+>
+
+{#if myCourses}
+  <MyCourses />
+{/if}
 
 <SearchBox
   searchTitlesProp={(search) => searchTitles(search)}
