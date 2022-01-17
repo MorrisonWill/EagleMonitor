@@ -11,17 +11,18 @@
     "@sveltejs/adapter-auto": "next",
     "@sveltejs/kit": "next",
     "autoprefixer": "^10.3.7",
+    "carbon-components-svelte": "^0.51.3",
+    "carbon-icons-svelte": "^10.44.3",
     "cssnano": "^5.0.8",
     "postcss": "^8.3.9",
     "postcss-load-config": "^3.1.0",
     "svelte": "^3.45.0",
     "svelte-preprocess": "^4.9.8",
-    "svelte-search": "^2.0.0",
     "tailwindcss": "^3.0.0"
   },
   "type": "module",
   "dependencies": {
     "@supabase/supabase-js": "^1.29.0",
-    "svelte-infinite-scroll": "^2.0.0"
+    "svelte-search": "^2.0.0"
   }
 }

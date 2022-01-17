@@ -1,13 +1,31 @@
 <script>
   import { onMount } from "svelte";
-  import CourseCard from "./_courseCard.svelte";
+
   import { supabase } from "$lib/supabaseClient";
-  import SearchBox from "./_searchBox.svelte";
-  import MyCourses from "./_myCourses.svelte";
+
+  import CourseTile from "./_courseTile.svelte";
+
+  import {
+    Header,
+    Content,
+    Grid,
+    Row,
+    Column,
+    Loading,
+    Search,
+    Toggle,
+    Button,
+    Theme,
+    SkeletonPlaceholder,
+    SkeletonText,
+    Tile,
+  } from "carbon-components-svelte";
+
+  let inSearch = false;
+
+  let search = "";
 
   let onlyOpen = false;
-  let inSearch = false;
-  let myCourses = false;
 
   let start = 0;
   let end = 9;
@@ -15,19 +33,28 @@
   let data = [];
   let newBatch = [];
 
+  let theme = "white";
+
+  let monitored = [];
+
   async function monitor(id) {
     let { data: courses } = await supabase
       .from("profiles")
       .select("courses")
+      .single()
       .eq("id", supabase.auth.user().id);
 
-    let existing = courses[0].courses;
+    let existing = courses.courses;
 
     if (existing == null) {
       existing = [];
     }
 
-    existing.push(id);
+    if (existing.includes(id)) {
+      existing.splice(existing.indexOf(id), 1);
+    } else {
+      existing.push(id);
+    }
 
     let cleaned = [...new Set(existing)];
 
@@ -57,30 +84,6 @@
     newBatch = courses;
   }
 
-  async function searchTitles(search) {
-    data = [];
-    newBatch = [];
-
-    inSearch = true;
-    if (onlyOpen) {
-      const { data: courses } = await supabase
-        .from("courses")
-        .select()
-        .filter("status", "in", '("open")')
-        .order("id", { ascending: true })
-        .textSearch("name", search.value);
-      data = courses;
-      return;
-    }
-    const { data: courses } = await supabase
-      .from("courses")
-      .select()
-      .order("id", { ascending: true })
-      .textSearch("name", search.value);
-    console.log(courses);
-    data = courses;
-  }
-
   function clearSearch() {
     inSearch = false;
     data = [];
@@ -91,81 +94,120 @@
     fetchData();
   }
 
-  function toggleOnlyOpen() {
-    onlyOpen = !onlyOpen;
+  async function searchTitles() {
+    data = [];
+    newBatch = [];
 
-    clearSearch();
+    inSearch = true;
+    if (onlyOpen) {
+      const { data: courses } = await supabase
+        .from("courses")
+        .select()
+        .filter("status", "in", '("open")')
+        .order("id", { ascending: true })
+        .textSearch("name", search);
+      data = courses;
+      return;
+    }
+    const { data: courses } = await supabase
+      .from("courses")
+      .select()
+      .order("id", { ascending: true })
+      .textSearch("name", search);
+    data = courses;
   }
 
-  function toggleMyCourses() {
-    myCourses = !myCourses;
+  async function getMonitored() {
+    let { data: courses } = await supabase
+      .from("profiles")
+      .select("courses")
+      .single();
+
+    monitored = courses.courses;
   }
 
   onMount(() => {
-    // load first batch onMount
+    getMonitored();
     fetchData();
   });
 
   $: data = [...data, ...newBatch];
 </script>
 
-<button
-  on:click={toggleMyCourses}
-  class="block p-4 text-sm font-semibold hover:bg-indigo-50 hover:text-indigo-500 rounded"
-  >View My Courses</button
->
+<Theme bind:theme />
 
-{#if myCourses}
-  <MyCourses />
-{/if}
+<Header platformName="Eagle Monitor Course List" />
 
-<SearchBox
-  searchTitlesProp={(search) => searchTitles(search)}
-  clearSearchProp={() => clearSearch()}
-/>
+<Content>
+  <Grid>
+    <Row>
+      <Column>
+        <Search
+          bind:value={search}
+          on:clear={clearSearch}
+          on:change={searchTitles}
+          size="sm"
+        />
+      </Column>
+    </Row>
+    <br />
+    <Row>
+      <Column>
+        <Toggle
+          size="sm"
+          labelText="Only show open courses"
+          on:toggle={() => {
+            onlyOpen = !onlyOpen;
+            console.log(onlyOpen);
+            clearSearch();
+          }}
+        />
+      </Column>
+    </Row>
+  </Grid>
 
-<div class="flex justify-left">
-  <div>
-    <div class="form-check">
-      <input
-        on:change={() => toggleOnlyOpen()}
-        class="form-check-input appearance-none h-4 w-4 border border-gray-300 rounded-sm bg-white checked:bg-blue-600 checked:border-blue-600 focus:outline-none transition duration-200 mt-1 align-top bg-no-repeat bg-center bg-contain float-left mr-2 cursor-pointer"
-        type="checkbox"
-        value=""
-        id="flexCheckDefault"
-      />
-      <label
-        class="form-check-label inline-block text-gray-800"
-        for="flexCheckDefault"
-      >
-        Only display open courses
-      </label>
-    </div>
-  </div>
-</div>
+  <Grid padding>
+    {#await data then rows}
+      {#each rows as row}
+        <Row>
+          <Column>
+            <CourseTile
+              monitoredArray={monitored}
+              monitorProp={(id) => monitor(id)}
+              course={row}
+            />
+          </Column>
+        </Row>
+      {:else}
+        <Grid padding>
+          {#each Array(10) as _}
+            <Row>
+              <Column>
+                <Tile>
+                  <SkeletonText />
+                  <SkeletonText />
+                  <SkeletonText />
+                </Tile>
+              </Column>
+            </Row>
+          {/each}
+        </Grid>
+      {/each}
+    {/await}
 
-<body>
-  <div class="container mt-4 mx-auto">
-    <div class="grid grid-cols-1">
-      {#await data}
-        <p>loading course info...</p>
-      {:then rows}
-        {#each rows as row}
-          <CourseCard monitorProp={(id) => monitor(id)} course={row} />
-        {:else}
-          <p>loading course info...</p>
-        {/each}
-      {/await}
-    </div>
-  </div>
-
-  {#if !inSearch}
-    <button
-      on:click={() => {
-        start += 10;
-        end += 10;
-        fetchData();
-      }}>Load more</button
-    >
-  {/if}
-</body>
+    {#if !inSearch}
+      <Row>
+        <Column>
+          <Button
+            kind="tertiary"
+            on:click={() => {
+              start += 10;
+              end += 10;
+              fetchData();
+            }}>Load more</Button
+          >
+        </Column>
+      </Row>
+    {/if}
+  </Grid>
+</Content>
