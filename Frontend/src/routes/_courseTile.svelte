@@ -48,7 +48,7 @@
     <tbody>
       <tr class="active">
         <td>{course.school}</td>
-        <td class="text-center">{course.creditCount}</td>
+        <td style="text-align: center;">{course.creditCount}</td>
         <td>{course.courseLevel}</td>
       </tr>
     </tbody>

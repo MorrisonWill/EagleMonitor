@@ -1,7 +1,7 @@
 <script>
   import { user } from "$lib/sessionStore";
   import { supabase } from "$lib/supabaseClient";
-  import Guest from "./_Guest.svelte";
+  import Guest from "./_guest.svelte";
   import CourseList from "./_courseList.svelte";
 
   user.set(supabase.auth.user());
