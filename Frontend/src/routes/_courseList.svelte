@@ -7,21 +7,23 @@
 
   import {
     Header,
+    InlineNotification,
     Content,
     Grid,
     Row,
     Column,
-    Loading,
     Search,
     Toggle,
     Button,
     Theme,
-    SkeletonPlaceholder,
     SkeletonText,
     Tile,
   } from "carbon-components-svelte";
 
   let inSearch = false;
+  let loading = false;
+
+  let noResults = false;
 
   let search = "";
 
@@ -72,6 +74,8 @@
         .order("id", { ascending: true })
         .filter("status", "in", '("open")')
         .range(start, end);
+      loading = false;
+
       newBatch = courses;
       return;
     }
@@ -80,11 +84,16 @@
       .select("*")
       .order("id", { ascending: true })
       .range(start, end);
+    loading = false;
 
     newBatch = courses;
   }
 
   function clearSearch() {
+    getMonitored();
+
+    noResults = false;
+
     inSearch = false;
     data = [];
     newBatch = [];
@@ -95,6 +104,9 @@
   }
 
   async function searchTitles() {
+    getMonitored();
+    noResults = false;
+
     data = [];
     newBatch = [];
 
@@ -105,15 +117,33 @@
         .select()
         .filter("status", "in", '("open")')
         .order("id", { ascending: true })
-        .textSearch("name", search);
+        .textSearch("name", search, {
+          type: "websearch",
+          config: "english",
+        });
+      if (courses.length == 0) {
+        clearSearch();
+        noResults = true;
+        return;
+      }
       data = courses;
+
       return;
     }
     const { data: courses } = await supabase
       .from("courses")
       .select()
       .order("id", { ascending: true })
-      .textSearch("name", search);
+      .textSearch("name", search, {
+        type: "websearch",
+        config: "english",
+      });
+    if (courses.length == 0) {
+      clearSearch();
+      noResults = true;
+      return;
+    }
+
     data = courses;
   }
 
@@ -143,6 +173,7 @@
     <Row>
       <Column>
         <Search
+          placeholder="Search by title..."
           bind:value={search}
           on:clear={clearSearch}
           on:change={searchTitles}
@@ -150,6 +181,20 @@
         />
       </Column>
     </Row>
+    {#if noResults}
+      <Row>
+        <Column>
+          <InlineNotification
+            lowContrast
+            kind="error"
+            title="Error:"
+            subtitle="No results found. Please try a different search."
+            timeout="10000"
+          />
+        </Column>
+      </Row>
+    {/if}
+
     <br />
     <Row>
       <Column>
@@ -195,12 +240,24 @@
       {/each}
     {/await}
 
+    {#if loading}
+      <Row>
+        <Column>
+          <Tile>
+            <SkeletonText />
+            <SkeletonText />
+            <SkeletonText />
+          </Tile>
+        </Column>
+      </Row>
+    {/if}
+
     {#if !inSearch}
       <Row>
         <Column>
           <Button
-            kind="tertiary"
             on:click={() => {
+              loading = true;
               start += 10;
               end += 10;
               fetchData();
