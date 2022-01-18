@@ -56,9 +56,8 @@
             labelText="@bc.edu email address"
             invalidText="Please use a valid @bc.edu email address"
             placeholder="Enter your Boston College email..."
-            required
+            required 
           />
-        </FluidForm>
         <Button
           kind="secondary"
           tabIndex={0}
@@ -66,6 +65,7 @@
         >
           Sign In 
         </Button>
+        </FluidForm>
       </Column>
       </div>
     </Row>
