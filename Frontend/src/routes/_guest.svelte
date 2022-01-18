@@ -34,9 +34,12 @@
       </Row>
     </Tile>
 
-    <Row>
+    <br>
+
+    <Row margin: $spacing-05>
       <Column>
         <h2>What is Eagle Monitor?</h2>
+        <br>
         <p>
           Eagle Monitor helps you keep track of courses that are full that you
           want to join. You can select courses that you want to be notified
@@ -45,6 +48,7 @@
         </p>
       </Column>
 
+      <div class="emailcontainer">
       <Column>
         <FluidForm>
           <TextInput
@@ -54,8 +58,11 @@
           />
         </FluidForm>
       </Column>
+      </div>
     </Row>
 
+
+    <div class="statscontainer" style="position:relative;">
     <Row>
       {#await stats}
         <Column><UserAvatar32 /> loading...</Column>
@@ -69,14 +76,15 @@
         >
       {/await}
     </Row>
+    </div>
 
-    <div>
-      <div>
+    <div class="infocontainer">
+      <div class="summarycontainer">
         <p>
-          EagleMonitor has been helping Boston College students find, monitor,
-          and register for courses since 2022.
-        </p>
-      </div>
+        EagleMonitor has been helping Boston College students find, monitor, 
+        and register for courses since 2022.
+        </p> 
+      </div> 
       <div><strong>Creator</strong>: Will Morrison</div>
       <div><strong>Contact</strong>: morriswk@bc.edu</div>
       <div>
@@ -85,3 +93,42 @@
     </div>
   </Grid>
 </Content>
+
+<Style>
+
+  .titlecontainer { 
+    height: 5em;
+    width: 100%; 
+  }
+
+  .emailcontainer {
+    height: 5em;
+    width: 70%;
+    padding-top: 1em;
+    padding-bottom: 6em;
+
+  }
+
+
+  .statscontainer { 
+    padding-bottom: 4em;
+    margin: 40px 5px 0 0px;
+  }
+
+
+  :global(.infocontainer > *){
+    height: 1em;
+    width: 100%;
+    display: inline-block;
+    padding: 1em; 
+    background: #f4f4f4;
+  }
+
+  .summarycontainer {
+    width: 100%;
+    height: 100%;
+    background: #e0e0e0;
+  }
+
+  
+</Style>
