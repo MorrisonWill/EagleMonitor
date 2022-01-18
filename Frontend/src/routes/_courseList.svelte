@@ -154,6 +154,10 @@
       .single();
 
     monitored = courses.courses;
+
+    if (monitored == null) {
+      monitored = [];
+    }
   }
 
   onMount(() => {
