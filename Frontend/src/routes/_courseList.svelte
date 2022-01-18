@@ -159,6 +159,7 @@
   onMount(() => {
     getMonitored();
     fetchData();
+    console.log(data);
   });
 
   $: data = [...data, ...newBatch];
