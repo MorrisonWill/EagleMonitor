@@ -5,6 +5,7 @@
     Tab,
     TabContent,
     Content,
+    Button,
     Grid,
     Row,
     Column,
@@ -24,8 +25,8 @@
 
 <Header platformName="Eagle Monitor" />
 
-<Content>
-  <Grid>
+<Content> 
+  <Grid> 
     <Tile>
       <Row>
         <Column>
@@ -53,10 +54,18 @@
         <FluidForm>
           <TextInput
             labelText="@bc.edu email address"
+            invalidText="Please use a valid @bc.edu email address"
             placeholder="Enter your Boston College email..."
             required
           />
         </FluidForm>
+        <Button
+          kind="secondary"
+          tabIndex={0}
+          type="submit"
+        >
+          Sign In 
+        </Button>
       </Column>
       </div>
     </Row>
@@ -80,7 +89,7 @@
 
     <div class="infocontainer">
       <div class="summarycontainer">
-        <p>
+          <p style="color:#ffffff">
         EagleMonitor has been helping Boston College students find, monitor, 
         and register for courses since 2022.
         </p> 
@@ -90,8 +99,8 @@
       <div>
         <strong>Contributors</strong>: Andrew Clark, Jonathan Zarnstorff
       </div>
-    </div>
-  </Grid>
+    </div> 
+  </Grid> 
 </Content>
 
 <Style>
@@ -103,7 +112,7 @@
 
   .emailcontainer {
     height: 5em;
-    width: 70%;
+    width: 66%;
     padding-top: 1em;
     padding-bottom: 6em;
 
@@ -127,8 +136,7 @@
   .summarycontainer {
     width: 100%;
     height: 100%;
-    background: #e0e0e0;
+    background: #393939;
   }
-
   
 </Style>
