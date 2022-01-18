@@ -7,3 +7,5 @@ node_modules
 .svelte-kit
 yarn.lock
 .env
+build
+package-lock.json
