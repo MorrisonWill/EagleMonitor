@@ -1,10 +1,9 @@
 <script>
-      import { supabase } from "$lib/supabaseClient";
-
+  import { supabase } from "$lib/supabaseClient";
 
   import {
-  Form,
-  InlineNotification,
+    Form,
+    InlineNotification,
     Tile,
     Tabs,
     Tab,
@@ -24,7 +23,6 @@
   import UserAvatar32 from "carbon-icons-svelte/lib/UserAvatar32";
   import Catalog32 from "carbon-icons-svelte/lib/Catalog32";
   import ThumbsUp32 from "carbon-icons-svelte/lib/ThumbsUp32";
-
 
   let stats = getStats();
 
@@ -64,27 +62,27 @@
       </Row>
     </Tile>
 
-    <br>
+    <br />
 
-{#if emailSent}
-<InlineNotification
-  lowContrast
-  kind="success"
-  title="Success:"
-  subtitle="Please check your email for the login link"
-/>
-{:else if error}
-<InlineNotification
-  lowContrast
-  kind="error"
-  title="Error:"
-  subtitle="{error}"
-/>
-{/if}
+    {#if emailSent}
+      <InlineNotification
+        lowContrast
+        kind="success"
+        title="Success:"
+        subtitle="Please check your email for the login link"
+      />
+    {:else if error}
+      <InlineNotification
+        lowContrast
+        kind="error"
+        title="Error:"
+        subtitle={error}
+      />
+    {/if}
     <Row margin: $spacing-05>
       <Column>
         <h2>What is Eagle Monitor?</h2>
-        <br>
+        <br />
         <p>
           Eagle Monitor helps you keep track of courses that are full that you
           want to join. You can select courses that you want to be notified
@@ -94,49 +92,42 @@
       </Column>
 
       <div class="emailcontainer">
-      <Column>
-        <FluidForm on:submit={handleLogin}>
-          <TextInput
-            labelText="@bc.edu email address"
-            invalidText="Please use a valid @bc.edu email address"
-            placeholder="Enter your Boston College email..."
-            bind:value={email}
-            required
-          />
-        <Button
-          kind="secondary"
-          tabIndex={0}
-          type="submit"
-        >
-          Sign In
-        </Button>
-        </FluidForm>
-      </Column>
+        <Column>
+          <FluidForm on:submit={handleLogin}>
+            <TextInput
+              labelText="@bc.edu email address"
+              invalidText="Please use a valid @bc.edu email address"
+              placeholder="Enter your Boston College email..."
+              bind:value={email}
+              required
+            />
+            <Button kind="secondary" tabIndex={0} type="submit">Sign In</Button>
+          </FluidForm>
+        </Column>
       </div>
     </Row>
 
-
     <div class="statscontainer" style="position:relative;">
-    <Row>
-      {#await stats}
-        <Column><UserAvatar32 /> loading...</Column>
-        <Column><Catalog32 /> loading...</Column>
-        <Column><ThumbsUp32 /> loading...</Column>
-      {:then statsObj}
-        <Column><UserAvatar32 /> {statsObj.profiles} Users</Column>
-        <Column><Catalog32 /> {statsObj.courses} Courses Listed</Column>
-        <Column
-          ><ThumbsUp32 /> {statsObj.notifications} Notifications Sent</Column
-        >
-      {/await}
-    </Row>
+      <Row>
+        {#await stats}
+          <Column><UserAvatar32 /> loading...</Column>
+          <Column><Catalog32 /> loading...</Column>
+          <Column><ThumbsUp32 /> loading...</Column>
+        {:then statsObj}
+          <Column><UserAvatar32 /> {statsObj.profiles} Users</Column>
+          <Column><Catalog32 /> {statsObj.courses} Courses Listed</Column>
+          <Column
+            ><ThumbsUp32 /> {statsObj.notifications} Notifications Sent</Column
+          >
+        {/await}
+      </Row>
     </div>
 
     <div class="infocontainer">
       <div class="summarycontainer">
-          <p style="color:#ffffff">
-        EagleMonitor has been helping Boston College students find, monitor,
-        and register for courses since 2022.
+        <p style="color:#ffffff">
+          EagleMonitor has been helping Boston College students find, monitor,
+          and register for courses since 2022.
         </p>
       </div>
       <div><strong>Creator</strong>: Will Morrison</div>
@@ -148,8 +139,7 @@
   </Grid>
 </Content>
 
-<Style>
-
+<style>
   .titlecontainer {
     height: 5em;
     width: 100%;
@@ -160,17 +150,14 @@
     width: 66%;
     padding-top: 1em;
     padding-bottom: 6em;
-
   }
-
 
   .statscontainer {
     padding-bottom: 4em;
     margin: 40px 5px 0 0px;
   }
 
-
-  :global(.infocontainer > *){
+  :global(.infocontainer > *) {
     height: 1em;
     width: 100%;
     display: inline-block;
@@ -183,5 +170,4 @@
     height: 100%;
     background: #393939;
   }
-
-</Style>
+</style>
