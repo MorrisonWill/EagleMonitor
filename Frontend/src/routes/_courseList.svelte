@@ -177,6 +177,17 @@
   <Grid>
     <Row>
       <Column>
+        <p>
+          You can search for courses below or scroll to browse BC's course list.
+          To view more information about a course, click on the tile. To monitor
+          a course (receive an email when it opens), click the monitor button at
+          the top right of the tile.
+        </p>
+        <br />
+      </Column>
+    </Row>
+    <Row>
+      <Column>
         <Search
           placeholder="Search by title..."
           bind:value={search}

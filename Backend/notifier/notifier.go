@@ -31,6 +31,7 @@ var serviceKey string // to be set later from env
 var client = http.Client{}
 
 func sendNotifyEmail(email string, courses []string) (string, error) {
+	fmt.Printf("notifying %s about %v\n", email, courses)
 	mg := mailgun.NewMailgun(domain, privateKey)
 	sender := "notification@eaglemonitor.app"
 	subject := fmt.Sprintf("%d BC COURSES OPENED!", len(courses))
@@ -153,5 +154,10 @@ func main() {
 	serviceKey = os.Getenv("SUPABASE_SERVICE_KEY")
 	privateKey = os.Getenv("MAILGUN_PRIVATE_KEY")
 
-	MonitorAndSend()
+	test, err := sendNotifyEmail("morriswk@bc.edu", []string{"course goes here"})
+
+	fmt.Println(test)
+	fmt.Println(err)
+
+	//	MonitorAndSend()
 }

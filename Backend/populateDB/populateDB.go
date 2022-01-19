@@ -101,12 +101,21 @@ func main() {
 
 		fmt.Println(t)
 
+		status := "closed"
+
+		for _, seatStruct := range item.SeatData {
+			if seatStruct.Used < seatStruct.Total {
+				fmt.Printf("used: %d, total: %d, open\n", seatStruct.Used, seatStruct.Total)
+				status = "open"
+			}
+		}
+
 		data, _ := json.Marshal(map[string]interface{}{
 			"id":               item.ID,
 			"name":             item.Name,
 			"description":      descriptionText,
 			"courseLevel":      description.CourseLevel,
-			"status":           description.Status,
+			"status":           status,
 			"school":           description.School,
 			"coreRequirements": description.CoreProgramrequirements,
 			"creditCount":      description.CreditCount,

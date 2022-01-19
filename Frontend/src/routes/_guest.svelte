@@ -54,6 +54,11 @@
 
 <Content>
   <Grid>
+    <InlineNotification
+      lowContrast
+      kind="warning"
+      subtitle="Eagle Monitor is in beta. Please email me at the email in the footer if you encounter any problems."
+    />
     <Tile>
       <Row>
         <Column>
@@ -69,7 +74,7 @@
         lowContrast
         kind="success"
         title="Success:"
-        subtitle="Please check your email for the login link"
+        subtitle="Please check your email for the login link. Be sure to check your spam folder and, if the email is there, move it to your inbox to see the login link."
       />
     {:else if error}
       <InlineNotification
@@ -79,7 +84,7 @@
         subtitle={error}
       />
     {/if}
-    <Row margin: $spacing-05>
+    <Row>
       <Column>
         <h2>What is Eagle Monitor?</h2>
         <br />
@@ -124,12 +129,6 @@
     </div>
 
     <div class="infocontainer">
-      <div class="summarycontainer">
-        <p style="color:#ffffff">
-          EagleMonitor has been helping Boston College students find, monitor,
-          and register for courses since 2022.
-        </p>
-      </div>
       <div><strong>Creator</strong>: Will Morrison</div>
       <div><strong>Contact</strong>: morriswk@bc.edu</div>
       <div>
