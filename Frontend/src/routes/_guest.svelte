@@ -57,7 +57,7 @@
     <InlineNotification
       lowContrast
       kind="warning"
-      subtitle="Eagle Monitor is in beta. Please email me at the email in the footer if you encounter any problems."
+      subtitle="Eagle Monitor is in beta. The site is currently best viewed on a computer. Please email me at the email in the footer if you encounter any problems."
     />
     <Tile>
       <Row>
